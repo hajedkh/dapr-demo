@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: article-service
+  labels:
+    app: article-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: article-service
+  template:
+    metadata:
+      labels:
+        app: article-service
+      annotations:
+        dapr.io/enabled: "true"                  
+        dapr.io/app-id: "article-service"          
+        dapr.io/app-port: "8081"                 
+    spec:
+      containers:
+      - name: article-service
+        image: ttl.sh/article:1h
+        ports:
+        - containerPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+      annotations:
+        dapr.io/enabled: "true"                  
+        dapr.io/app-id: "order-service"          
+        dapr.io/app-port: "8080"                 
+    spec:
+      containers:
+      - name: order-service
+        image: ttl.sh/order:1h
+        ports:
+        - containerPort: 8080
