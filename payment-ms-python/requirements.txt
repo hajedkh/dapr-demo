@@ -1,0 +1,4 @@
+flask~=3.0.3
+dapr
+requests
+cloudevents
