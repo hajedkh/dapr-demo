@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
     "encoding/json"
     "io/ioutil"
     "log"
@@ -14,8 +15,8 @@ import (
 
 // Entity
 type OrderDTO struct {
-    OrderID  int      `json:"orderId"`
-    Articles []string `json:"articleIds"` 
+    OrderID  int      `json:"order_id"`
+    Articles []string `json:"article_ids"` 
     Quantity int      `json:"quantity"`
 }
 
@@ -96,11 +97,50 @@ func GetOrders(w http.ResponseWriter, r *http.Request) {
         return
     }
 }
+func PayOrder(w http.ResponseWriter, r *http.Request) {
+    var order OrderDTO
+    err := json.NewDecoder(r.Body).Decode(&order)
+    if err != nil {
+        http.Error(w, "Invalid request payload", http.StatusBadRequest)
+        return
+    }
+
+    // Assuming the external payment service URL is defined here
+    externalServiceURL := "http://localhost:5001/pay" // Replace with the actual URL
+
+    // Convert the order to JSON for the request body
+    orderData, err := json.Marshal(order)
+    if err != nil {
+        http.Error(w, "Failed to marshal order data", http.StatusInternalServerError)
+        return
+    }
+
+    // Create a POST request to the external service
+    resp, err := http.Post(externalServiceURL, "application/json", bytes.NewBuffer(orderData))
+    if err != nil {
+        http.Error(w, "Failed to communicate with the payment service", http.StatusInternalServerError)
+        return
+    }
+    defer resp.Body.Close()
+
+    // Read the response from the external service
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        http.Error(w, "Failed to read payment service response", http.StatusInternalServerError)
+        return
+    }
+
+    // Return the response from the payment service to the client
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(resp.StatusCode)
+    w.Write(body)
+}
 
 func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/order", AddOrder).Methods("POST")
 	r.HandleFunc("/orders", GetOrders).Methods("GET")
+	r.HandleFunc("/payOrder", PayOrder).Methods("POST") 
 
 	log.Println("Server running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
