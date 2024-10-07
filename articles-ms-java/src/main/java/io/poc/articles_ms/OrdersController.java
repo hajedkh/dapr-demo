@@ -1,5 +1,7 @@
 package io.poc.articles_ms;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,16 @@ public class OrdersController {
     }
 
 
+    @GetMapping("/get")
+    public void getOrders(){
+         orderRepo.findAll().forEach(order -> {
+             try {
+                 System.out.println( new ObjectMapper().writeValueAsString(order));
+             } catch (JsonProcessingException e) {
+                 throw new RuntimeException(e);
+             }
+         });
+    }
 
 
 
@@ -50,6 +62,9 @@ public class OrdersController {
                     .body("Error sending message: " + e.getMessage());
         }
     }
+
+
+
 
 
 
