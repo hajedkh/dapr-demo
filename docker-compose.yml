@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # Articles-ms Java
+  articles-ms:
+    build:
+      context: ./articles-ms-java
+    ports:
+      - "8080:8080"
+    environment:
+      - DAPR_HTTP_PORT=3501
+    networks:
+      - dapr-network
+    depends_on:
+      - redis
+    labels:
+      - "dapr.io/enabled=true"
+      - "dapr.io/app-id=articles-ms"
+      - "dapr.io/app-port=8080"
+
+  dapr-articles-ms:
+    image: "daprio/daprd:latest"
+    command: ["./daprd", "--app-id", "articles-ms", "--app-port", "8080", "--dapr-http-port", "3501", "--resources-path", "./components"]
+    volumes:
+      - "./dapr-components/:/components"
+    depends_on:
+      - articles-ms
+      - redis
+    network_mode: "service:articles-ms"
+
+  # App 2
+  orders-ms:
+    build:
+      context: ./orders-ms-golang
+    ports:
+      - "8081:8081"
+    environment:
+      - DAPR_HTTP_PORT=3502
+    networks:
+      - dapr-network
+    depends_on:
+      - redis
+    labels:
+      - "dapr.io/enabled=true"
+      - "dapr.io/app-id=orders-ms"
+      - "dapr.io/app-port=8081"
+
+  dapr-orders-ms:
+    image: "daprio/daprd:latest"
+    command: ["./daprd", "--app-id", "orders-ms", "--app-port", "8081", "--dapr-http-port", "3502", "--resources-path", "./components"]
+    volumes:
+      - "./dapr-components/:/components"
+    depends_on:
+      - orders-ms
+    network_mode: "service:orders-ms"
+
+  # App 3
+  payment-ms:
+    build:
+      context: ./payment-ms-python  # Directory containing Dockerfile for app3
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_PORT=5000
+      - DAPR_HTTP_PORT=3503
+    networks:
+      - dapr-network
+    depends_on:
+      - redis
+    labels:
+      - "dapr.io/enabled=true"
+      - "dapr.io/app-id=payment-ms"
+      - "dapr.io/app-port=5000"
+
+  dapr-payment-ms:
+    image: "daprio/daprd:latest"
+    command: ["./daprd", "--app-id", "payment-ms", "--app-port", "5000", "-dapr-http-port", "3503", "--resources-path", "./components"]
+    volumes:
+      - "./dapr-components/:/components"
+    depends_on:
+      - payment-ms
+    network_mode: "service:payment-ms"
+
+  # Redis for state management (optional)
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - dapr-network
+
+networks:
+  dapr-network:
+    driver: bridge

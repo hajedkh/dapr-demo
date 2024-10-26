@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import io.dapr.client.DaprClient;
 import io.dapr.exceptions.DaprException;
 
+import java.util.List;
+
 @RestController
+@CrossOrigin
 @RequestMapping("/api/order")
 public class OrdersController {
 
@@ -38,24 +41,16 @@ public class OrdersController {
 
 
     @GetMapping("/get")
-    public void getOrders(){
-         orderRepo.findAll().forEach(order -> {
-             try {
-                 System.out.println( new ObjectMapper().writeValueAsString(order));
-             } catch (JsonProcessingException e) {
-                 throw new RuntimeException(e);
-             }
-         });
+    public List<Order> getOrders(){
+         return orderRepo.findAll();
     }
-
-
 
 
 
     @PostMapping("/send")
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {
         try {
-              daprClient.publishEvent("rabbitmq-pubsub", "orders", order).block();
+              daprClient.publishEvent("redis-pubsub", "orders", order).block();
             return ResponseEntity.status(HttpStatus.OK).body("Order Placed successfully");
         } catch (DaprException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

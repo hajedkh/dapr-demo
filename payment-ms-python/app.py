@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 from dapr.clients import DaprClient
 import json
 
-PUBSUB_NAME = 'rabbitmq-pubsub'
+PUBSUB_NAME = 'redis-pubsub'
 TOPIC_NAME = 'payments'
 
 app = Flask("Payment-MS")

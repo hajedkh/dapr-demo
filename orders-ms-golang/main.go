@@ -106,7 +106,7 @@ func PayOrder(w http.ResponseWriter, r *http.Request) {
     }
 
     // Assuming the external payment service URL is defined here
-    externalServiceURL := "http://localhost:5001/pay" // Replace with the actual URL
+    externalServiceURL := "http://payment-ms:5000/pay" // Replace with the actual URL
 
     // Convert the order to JSON for the request body
     orderData, err := json.Marshal(order)
@@ -136,12 +136,32 @@ func PayOrder(w http.ResponseWriter, r *http.Request) {
     w.Write(body)
 }
 
+// Middleware to handle CORS
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	r := mux.NewRouter()
-	r.HandleFunc("/order", AddOrder).Methods("POST")
-	r.HandleFunc("/orders", GetOrders).Methods("GET")
-	r.HandleFunc("/payOrder", PayOrder).Methods("POST") 
 
-	log.Println("Server running on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	// Apply CORS middleware
+	r.Use(enableCORS)
+
+	r.HandleFunc("/order", AddOrder).Methods("POST", "OPTIONS")
+	r.HandleFunc("/orders", GetOrders).Methods("GET", "OPTIONS")
+	r.HandleFunc("/payOrder", PayOrder).Methods("POST", "OPTIONS")
+
+	log.Println("Server running on port 8081")
+	log.Fatal(http.ListenAndServe(":8081", r))
 }
