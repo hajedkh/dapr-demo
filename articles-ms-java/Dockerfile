@@ -1,14 +1,14 @@
+FROM gradle:8-jdk17 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle build --no-daemon 
 
 FROM openjdk:17
 
-
-WORKDIR /app
-
-
-COPY build/libs/articles-ms-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the port your app runs on (default is 8080)
 EXPOSE 8080
 
-# Command to run the JAR file
-ENTRYPOINT ["java", "-jar", "app.jar"]
+RUN mkdir /app
+
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/spring-boot-application.jar
+
+ENTRYPOINT ["java","-jar","/app/spring-boot-application.jar"]

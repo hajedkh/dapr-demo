@@ -6,6 +6,6 @@ spec:
   topic: orders
   routes: 
     default: /order
-  pubsubname: rabbitmq-pubsub
+  pubsubname: redis-pubsub
 scopes:
-- order-service
+- orders-ms
