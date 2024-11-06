@@ -13,7 +13,7 @@ jobs:
 
       - name: Build and Push Docker Images
         run: |
-          for dir in article-ms-java orders-ms-golang payment-ms-python; do
+          for dir in articles-ms-java orders-ms-golang payment-ms-python; do
             echo "Building and pushing image for $dir"
             
             # Build the Docker image
