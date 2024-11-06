@@ -1,0 +1,24 @@
+name: Build and Push to ttl.sh for Multiple Folders
+on:
+  push:
+    branches:
+      - main  
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build and Push Docker Images
+        run: |
+          for dir in article-ms-java orders-ms-golang payment-ms-python; do
+            echo "Building and pushing image for $dir"
+            
+            # Build the Docker image
+            docker build -t ttl.sh/$dir:5h $dir
+            
+            # Push the Docker image to ttl.sh
+            docker push ttl.sh/$dir:5h
+          done
