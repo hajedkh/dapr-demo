@@ -23,11 +23,6 @@ public class OrdersController {
     @Autowired
     private OrderRepo orderRepo;
 
-
-
-    /** Just For test reasons do not use it ,
-    /*  the front needs to cache the order created and send it directly threw the /send endpoint just below
-     */
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
         try {
@@ -44,8 +39,6 @@ public class OrdersController {
     public List<Order> getOrders(){
          return orderRepo.findAll();
     }
-
-
 
     @PostMapping("/send")
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {

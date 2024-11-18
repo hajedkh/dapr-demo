@@ -15,8 +15,8 @@ import (
 
 // Entity
 type OrderDTO struct {
-    OrderID  int      `json:"order_id"`
-    Articles []string `json:"article_ids"` 
+    OrderID  string      `json:"orderId"`
+    Articles []string `json:"articleIds"`
     Quantity int      `json:"quantity"`
 }
 
@@ -54,13 +54,25 @@ func LoadOrders() error {
 
 
 func AddOrder(w http.ResponseWriter, r *http.Request) {
-    var order OrderDTO
-    err := json.NewDecoder(r.Body).Decode(&order)
-    if err != nil {
-        http.Error(w, "Invalid request payload", http.StatusBadRequest)
+    // Define a CloudEvent structure
+    var cloudEvent struct {
+        Data json.RawMessage `json:"data"` // CloudEvent "data" attribute
+    }
+
+    // Parse the CloudEvent from the request body
+    if err := json.NewDecoder(r.Body).Decode(&cloudEvent); err != nil {
+        http.Error(w, "Invalid CloudEvent payload", http.StatusBadRequest)
+        log.Println("Failed to decode CloudEvent:", err)
         return
     }
 
+    // Decode the "data" field into the OrderDTO struct
+    var order OrderDTO
+    if err := json.Unmarshal(cloudEvent.Data, &order); err != nil {
+        http.Error(w, "Invalid order payload in data attribute", http.StatusBadRequest)
+        log.Println("Failed to decode OrderDTO from data:", err)
+        return
+    }
 
     orders = append(orders, order)
 
@@ -156,7 +168,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// Apply CORS middleware
-	r.Use(enableCORS)
+	//r.Use(enableCORS)
 
 	r.HandleFunc("/order", AddOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/orders", GetOrders).Methods("GET", "OPTIONS")
