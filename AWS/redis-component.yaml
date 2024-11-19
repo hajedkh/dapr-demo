@@ -1,0 +1,19 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+spec:
+  type: pubsub.aws.snssqs
+  version: v1
+  metadata:
+  - name: accessKey
+    secretKeyRef:
+      name: aws-creds
+      key:  accessKey
+  - name: secretKey
+    secretKeyRef:
+      name: aws-creds
+      key:  secretKey
+  - name: region
+    value: "eu-west-1"

@@ -1,1 +1,1 @@
-[{"orderId":1,"articleIds":["Widget","Gadget"],"quantity":5}]
+[{"order_id":"12345","article_ids":["article1","article2"],"quantity":"3"}]
