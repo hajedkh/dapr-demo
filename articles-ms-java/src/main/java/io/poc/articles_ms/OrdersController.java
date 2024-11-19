@@ -1,17 +1,21 @@
 package io.poc.articles_ms;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import io.dapr.client.DaprClient;
 import io.dapr.exceptions.DaprException;
-
-import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -24,6 +28,12 @@ public class OrdersController {
 
     @Autowired
     private OrderRepo orderRepo;
+
+    @Value("${dapr.secretstore}")
+    private String secretStore;
+
+    @Value("${dapr.pubsubname}")
+    private String pubSubName;
 
     @PostMapping("/add")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
@@ -45,7 +55,7 @@ public class OrdersController {
     @PostMapping("/send")
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {
         try {
-              Map<String, String> pubsub = daprClient.getSecret("secretstore", "pubSubName").block();
+              Map<String, String> pubsub = daprClient.getSecret(secretStore, pubSubName).block();
               daprClient.publishEvent(pubsub.get("pubSubName"), "orders", order).block();
             return ResponseEntity.status(HttpStatus.OK).body("Order Placed successfully");
         } catch (DaprException e) {
