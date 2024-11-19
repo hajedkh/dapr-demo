@@ -55,9 +55,10 @@ public class OrdersController {
     @PostMapping("/send")
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {
         try {
+             System.out.println("trying to send...");
               Map<String, String> pubsub = daprClient.getSecret(secretStore, pubSubName).block();
               System.out.println(pubsub.get("pubSubName"));
-              daprClient.publishEvent(pubsub.get("pubSubName"), "orders", order).block();
+              daprClient.publishEvent("pubsub", "orders", order).block();
             return ResponseEntity.status(HttpStatus.OK).body("Order Placed successfully");
         } catch (DaprException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
