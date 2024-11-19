@@ -59,7 +59,8 @@ You can then use the microservices deployed on the AKS cluster by doing a port-f
 k port-forward service/articles-ms 18080:8080 &
 k port-forward service/orders-ms 18081:8081 &
 ```
-
+k port-forward service/articles-ms 28080:8080 &
+k port-forward service/orders-ms 28081:8081 &
 
 ### On AWS
 
