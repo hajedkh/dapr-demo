@@ -11,15 +11,31 @@
 			"item": [
 				{
 					"name": "Get all orders",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"url": {
+							"raw": "http://localhost:{{ORDERS_MS_PORT}}/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "{{ORDERS_MS_PORT}}",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay",
+					"request": {
+						"method": "POST",
+						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"order_id\": \"1\",\n    \"article_ids\": [12],\n    \"quantity\": 1\n}",
+							"raw": "{\n    \"orderId\": \"1\",\n    \"articleIds\": [\"12\"],\n    \"quantity\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -27,14 +43,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8081/orders",
+							"raw": "http://localhost:{{ORDERS_MS_PORT}}/payOrder",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8081",
+							"port": "{{ORDERS_MS_PORT}}",
 							"path": [
-								"orders"
+								"payOrder"
 							]
 						}
 					},
@@ -60,12 +76,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/article/add",
+							"raw": "http://localhost:{{ARTICLES_MS_PORT}}/api/article/add",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "{{ARTICLES_MS_PORT}}",
 							"path": [
 								"api",
 								"article",
@@ -77,28 +93,16 @@
 				},
 				{
 					"name": "Get All Article",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[{\n    \"articleId\": \"12\",\n    \"name\": \"Voiture\",\n    \"price\": \"16\",\n    \"picture\": \"http://\"\n}]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "http://localhost:8080/api/article/getAll",
+							"raw": "http://localhost:{{ARTICLES_MS_PORT}}/api/article/getAll",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "{{ARTICLES_MS_PORT}}",
 							"path": [
 								"api",
 								"article",
@@ -110,28 +114,16 @@
 				},
 				{
 					"name": "Get order",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "[{\n    \"articleId\": \"12\",\n    \"name\": \"Voiture\",\n    \"price\": \"16\",\n    \"picture\": \"http://\"\n}]",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "http://localhost:8080/api/order/get",
+							"raw": "http://localhost:{{ARTICLES_MS_PORT}}/api/order/get",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "{{ARTICLES_MS_PORT}}",
 							"path": [
 								"api",
 								"order",
@@ -148,7 +140,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"order_id\": \"1\",\n    \"article_ids\": [12],\n    \"quantity\": 1\n}",
+							"raw": "{\n    \"orderId\": \"1\",\n    \"articleIds\": [12],\n    \"quantity\": 1\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -186,12 +178,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/order/send",
+							"raw": "http://localhost:{{ARTICLES_MS_PORT}}/api/order/send",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "8080",
+							"port": "{{ARTICLES_MS_PORT}}",
 							"path": [
 								"api",
 								"order",
@@ -202,6 +194,40 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ORDERS_MS_PORT",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ARTICLES_MS_PORT",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
