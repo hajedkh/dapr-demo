@@ -56,6 +56,7 @@ public class OrdersController {
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {
         try {
               Map<String, String> pubsub = daprClient.getSecret(secretStore, pubSubName).block();
+              System.out.println(pubsub.get("pubSubName"));
               daprClient.publishEvent(pubsub.get("pubSubName"), "orders", order).block();
             return ResponseEntity.status(HttpStatus.OK).body("Order Placed successfully");
         } catch (DaprException e) {
