@@ -3,7 +3,6 @@ kind: Component
 metadata:
   name: pubsub
 spec:
-spec:
   type: pubsub.aws.snssqs
   version: v1
   metadata:
