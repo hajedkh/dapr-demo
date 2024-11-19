@@ -57,6 +57,11 @@ resource "azurerm_servicebus_queue" "sb_queue" {
   name                = "orders"
   namespace_id        = azurerm_servicebus_namespace.sb-tvt.id
 }
+resource "azurerm_role_assignment" "servicebus_receiver" {
+  principal_id   = azurerm_user_assigned_identity.dapr-identity.principal_id
+  role_definition_name = "Azure Service Bus Data Receiver"
+  scope          = azurerm_servicebus_namespace.sb-tvt.id
+}
 
 // Key Vault
 resource "azurerm_key_vault" "kv" {
@@ -85,7 +90,7 @@ resource "azurerm_key_vault" "kv" {
 
   access_policy {
     tenant_id = data.azurerm_client_config.client.tenant_id
-    object_id = azurerm_kubernetes_cluster.cluster.kubelet_identity[0].object_id
+    object_id = azurerm_user_assigned_identity.dapr-identity.principal_id
 
     key_permissions = [
       "Get", "List", "Update", "Create", "Delete"
@@ -103,12 +108,18 @@ resource "azurerm_key_vault" "kv" {
 
 resource "azurerm_key_vault_secret" "pubSubName" {
   name         = "pubSubName"
-  value        = "redis-pubsub"
+  value        = "azure-pubsub"
   key_vault_id = azurerm_key_vault.kv.id
 }
 
 resource "azurerm_key_vault_secret" "payment-key" {
   name         = "payment-key"
   value        = "ec37aa25501f5aea74d5eb3d19b08333"
+  key_vault_id = azurerm_key_vault.kv.id
+}
+
+resource "azurerm_key_vault_secret" "servicebus-connection-string" {
+  name         = "servicebus-connection-string"
+  value        = azurerm_servicebus_namespace.sb-tvt.default_primary_connection_string
   key_vault_id = azurerm_key_vault.kv.id
 }

@@ -6,6 +6,6 @@ spec:
   topic: orders
   routes:
     default: /order
-  pubsubname: redis-pubsub
+  pubsubname: azure-pubsub
 scopes:
   - orders-ms
