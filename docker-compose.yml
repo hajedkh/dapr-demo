@@ -23,6 +23,7 @@ services:
     command: ["./daprd", "--app-id", "articles-ms", "--app-port", "8080", "--dapr-http-port", "3501", "--resources-path", "./components"]
     volumes:
       - "./dapr-components/:/components"
+      - "./secrets/:/secrets"
     depends_on:
       - articles-ms
       - redis
@@ -50,6 +51,7 @@ services:
     command: ["./daprd", "--app-id", "orders-ms", "--app-port", "8081", "--dapr-http-port", "3502", "--resources-path", "./components"]
     volumes:
       - "./dapr-components/:/components"
+      - "./secrets/:/secrets"
     depends_on:
       - orders-ms
     network_mode: "service:orders-ms"
@@ -77,6 +79,7 @@ services:
     command: ["./daprd", "--app-id", "payment-ms", "--app-port", "5000", "-dapr-http-port", "3503", "--resources-path", "./components"]
     volumes:
       - "./dapr-components/:/components"
+      - "./secrets/:/secrets"
     depends_on:
       - payment-ms
     network_mode: "service:payment-ms"

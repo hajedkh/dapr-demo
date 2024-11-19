@@ -1,0 +1,44 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: articles-ms
+  labels:
+    app: articles-ms
+spec:
+  selector:
+    app: articles-ms
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: articles-ms
+
+  labels:
+    app: articles-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: articles-ms
+  template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
+        app: articles-ms
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "articles-ms"
+        dapr.io/enable-api-logging: "true"
+        dapr.io/app-port: "8080"
+    spec:
+      serviceAccountName: workload-identity-sa
+      containers:
+      - name: articles-ms
+        image: ttl.sh/articles-ms-java:5h
+        imagePullPolicy: Always

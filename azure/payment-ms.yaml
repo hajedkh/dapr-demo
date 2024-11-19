@@ -1,0 +1,44 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: payment-ms
+  labels:
+    app: payment-ms
+spec:
+  selector:
+    app: payment-ms
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-ms
+
+  labels:
+    app: payment-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-ms
+  template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
+        app: payment-ms
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "payment-ms"
+        dapr.io/enable-api-logging: "true"
+        dapr.io/app-port: "5000"
+    spec:
+      serviceAccountName: workload-identity-sa
+      containers:
+      - name: payment-ms
+        image: ttl.sh/payment-ms-python:5h
+        imagePullPolicy: Always

@@ -168,7 +168,7 @@ func main() {
 	r := mux.NewRouter()
 
 	// Apply CORS middleware
-	//r.Use(enableCORS)
+	r.Use(enableCORS)
 
 	r.HandleFunc("/order", AddOrder).Methods("POST", "OPTIONS")
 	r.HandleFunc("/orders", GetOrders).Methods("GET", "OPTIONS")

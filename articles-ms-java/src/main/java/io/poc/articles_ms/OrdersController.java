@@ -11,6 +11,8 @@ import io.dapr.client.DaprClient;
 import io.dapr.exceptions.DaprException;
 
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @CrossOrigin
@@ -43,7 +45,8 @@ public class OrdersController {
     @PostMapping("/send")
     public ResponseEntity<String> sendOrderMessage(@RequestBody Order order) {
         try {
-              daprClient.publishEvent("redis-pubsub", "orders", order).block();
+              Map<String, String> pubsub = daprClient.getSecret("secretstore", "pubSubName").block();
+              daprClient.publishEvent(pubsub.get("pubSubName"), "orders", order).block();
             return ResponseEntity.status(HttpStatus.OK).body("Order Placed successfully");
         } catch (DaprException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
