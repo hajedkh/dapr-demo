@@ -19,6 +19,7 @@ This project aims at reproducing an e-shope, it contains three microservices, us
 
 ## Dapr usage
 ### Locally, using Docker compose
+![Docker](resources/docker.png)
 
 You can test this integration of Dapr locally using the provided `docker-compose.yml` which will:
 * build the image for each microservice
@@ -28,7 +29,7 @@ You can test this integration of Dapr locally using the provided `docker-compose
 `dapr-components/` will then be used. It contains the Component and Subscription definition for the local environment. 
 
 ### On Azure
-
+![Azure](resources/azure.png)
 In the folder `tf-azure`you will find the necessary terraform blocks to provision:
 * AKS cluster: Kubernetes Cluster using the less costly configuration
 * Azure Key Vault to store Secrets and retrieve them using Dapr
@@ -63,8 +64,39 @@ k port-forward service/articles-ms 28080:8080 &
 k port-forward service/orders-ms 28081:8081 &
 
 ### On AWS
+![aws](resources/aws.png)
+In the folder `tf-aws` you will find the necessary Terraform blocks to provision basic resources for the poc:
+- **EKS Cluster**: Kubernetes Cluster using a cost-effective configuration .
+- **Necessary IAM Roles and Policies**: To grant permissions for accessing the components.
 
-// todo
+
+```sh
+# Provisioning Resources with Terraform
+cd tf-aws
+terraform init
+terraform apply
+```
+```sh
+# Configure kubectl to Access EKS Cluster
+aws eks --region <region> update-kubeconfig --name <cluster_name>
+```
+```sh
+# Initialize Dapr on the EKS Cluster
+dapr init -k
+```
+
+```sh
+# Apply Resource Configurations and Verify
+kubectl apply -f aws/
+kubectl get pods
+```
+```sh
+# Port-forwarding to Access Microservices
+kubectl port-forward service/articles-ms 28080:8080 &
+kubectl port-forward service/orders-ms 28081:8081 &
+```
+
+
 
 ## How to test the use-cases .
 
