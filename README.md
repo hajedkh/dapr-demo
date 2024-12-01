@@ -13,6 +13,7 @@ Purpose of this repository is to showcase Dapr capabilities to do easy lift&shif
 
 ## Example microservices
 This project aims at reproducing an e-shope, it contains three microservices, using different technologies and with differents purposes.
+![Docker](resources/microservices.png)
 * articles-ms-java: using Spring Boot to store articles and order drafts
 * orders-ms-golang: developed in Go it stores the Order and is the entry point to initiate the Payment requests
 * payment-ms-python: using Flask in Python, it simulate  a 5-seconds payment processing and then return a successful response
